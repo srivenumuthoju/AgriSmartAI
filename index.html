@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Crop Recommendations Using Machine Learning | AgriSmart AI</title>
+  <meta name="description" content="AI-powered crop recommendation system using Machine Learning algorithms (Random Forest, Decision Tree, SVM) to predict optimal crops based on soil nutrients and weather conditions.">
+  <meta name="keywords" content="Smart Agriculture, Crop Recommendation, Machine Learning, Precision Farming, Random Forest, Soil NPK">
+
+  <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Chart.js for Responsive Data Visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       1. NAVIGATION BAR
+       ========================================================================= -->
+  <header class="navbar" id="topNavbar">
+    <div class="container">
+      <a href="#home" class="brand-logo" id="brandLogo">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12A10 10 0 0 1 12 2z"></path>
+            <path d="M12 18V6"></path>
+            <path d="M8 10c2-2 4-2 4 0s2 2 4 0"></path>
+          </svg>
+        </div>
+        <span>AgriSmart<span style="color:var(--primary-600)">AI</span></span>
+        <span class="brand-badge">ML 2.4</span>
+      </a>
+
+      <nav>
+        <ul class="nav-links" id="navLinks">
+          <li><a href="#home" class="active">Home</a></li>
+          <li><a href="#predictor">Crop Predictor</a></li>
+          <li><a href="#dashboard">Farmer Dashboard</a></li>
+          <li><a href="#directory">Crop Library</a></li>
+          <li><a href="#how-it-works">ML Workflow</a></li>
+          <li><a href="#tech-stack">Tech Architecture</a></li>
+          <li>
+            <a href="#predictor" class="nav-cta-btn">
+              <span>🌾</span> Get Recommendation
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       2. HOME / HERO SECTION
+       ========================================================================= -->
+  <section class="hero-section" id="home">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content-col">
+          <div class="hero-badge-pill">
+            <span class="pulse-dot"></span>
+            <span>Intelligent Agricultural Decision Support System</span>
+          </div>
+
+          <h1 class="hero-title">
+            Smart Crop <span class="gradient-text">Recommendations</span>
+          </h1>
+          <p class="hero-subtitle">
+            AI-powered crop selection for better farming decisions
+          </p>
+          <p class="hero-description">
+            Harness state-of-the-art Machine Learning to discover the highest-yielding, most sustainable crops tailored to your soil’s macronutrients (N-P-K), soil pH, and micro-climatic environmental parameters.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#predictor" class="btn-primary" id="heroGetStartedBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M5 12h14"></path>
+                <path d="m12 5 7 7-7 7"></path>
+              </svg>
+              <span>Get Crop Recommendation</span>
+            </a>
+
+            <a href="#dashboard" class="btn-secondary" id="heroViewDashboardBtn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+                <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+                <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+                <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+              </svg>
+              <span>Farmer Dashboard</span>
+            </a>
+          </div>
+
+          <!-- Hero Quick Stats -->
+          <div class="hero-stats-row">
+            <div class="hero-stat-item">
+              <span class="hero-stat-value">99.2%</span>
+              <span class="hero-stat-label">Model Accuracy (RF)</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-value">22</span>
+              <span class="hero-stat-label">Supported Crops</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-value">7</span>
+              <span class="hero-stat-label">Climatic Dimensions</span>
+            </div>
+            <div class="hero-stat-item">
+              <span class="hero-stat-value">2,200</span>
+              <span class="hero-stat-label">Validated Samples</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hero Visual Showcase -->
+        <div class="hero-media-wrapper">
+          <div class="hero-image-card">
+            <img src="hero_farmland.jpeg" alt="Autonomous smart farm with drone monitoring and lush green crops" id="heroFarmlandImg">
+          </div>
+
+          <!-- Floating Telemetry Card 1 -->
+          <div class="hero-floating-badge badge-top-right">
+            <div class="floating-icon green">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="floating-text-title">Ensemble Accuracy</div>
+              <div class="floating-text-value">99.2% Random Forest</div>
+            </div>
+          </div>
+
+          <!-- Floating Telemetry Card 2 -->
+          <div class="hero-floating-badge badge-bottom-left">
+            <div class="floating-icon amber">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="floating-text-title">Live Sensor Mesh</div>
+              <div class="floating-text-value">N-P-K & Moisture Active</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       FEATURES & HIGHLIGHTS
+       ========================================================================= -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Scientific Precision</span>
+        <h2 class="section-title">Why Smart Crop Selection Matters</h2>
+        <p class="section-desc">Traditional farming often relies on guesswork or outdated historical trends. Our machine learning framework optimizes biological yield while protecting soil fertility.</p>
+      </div>
+
+      <div class="feature-cards-grid">
+        <div class="feature-card">
+          <div class="feature-icon-box">🌱</div>
+          <h3>Soil Nutrient Balancing</h3>
+          <p>Calculates precise vegetative nutrient absorption across Nitrogen (N), Phosphorus (P), and Potassium (K) to eliminate fertilizer waste.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">🌦️</div>
+          <h3>Micro-Climate Profiling</h3>
+          <p>Analyzes localized ambient temperature, relative humidity, and expected rainfall thresholds to safeguard against crop failure.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">🧪</div>
+          <h3>Soil pH Optimization</h3>
+          <p>Ensures that soil acidity and alkalinity match the exact biochemical uptake ranges for maximum root absorption.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-box">📈</div>
+          <h3>Multi-Model Prediction</h3>
+          <p>Combines Random Forest, Decision Trees, and Support Vector Machines with over 99% empirical validation.</p>
+        </div>
+      </div>
+
+      <!-- Feature Spotlight with Photos -->
+      <div class="spotlight-row">
+        <div class="spotlight-card">
+          <img src="smart_soil_sensor.jpeg" alt="Modern IoT soil testing probe inserted into fertile soil">
+          <div class="spotlight-body">
+            <h4>Precision In-Field IoT Sensing</h4>
+            <p>Direct integration with digital soil testing probes delivers accurate Nitrogen, Phosphorus, Potassium, and pH readings instantaneously.</p>
+          </div>
+        </div>
+
+        <div class="spotlight-card">
+          <img src="crop_harvest.jpeg" alt="Abundant harvest of grains, fruits and pulses">
+          <div class="spotlight-body">
+            <h4>Maximized Harvest Yields</h4>
+            <p>Farmers matching their regional micro-climates with ML-recommended crop varieties achieve an average 35% higher market return.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       3. CROP RECOMMENDATION INPUT PAGE / SECTION
+       ========================================================================= -->
+  <section class="predictor-section" id="predictor">
+    <div class="container">
+      <div class="predictor-card">
+        <div class="predictor-header-bar">
+          <div class="predictor-header-text">
+            <h2>Crop Recommendation Predictor</h2>
+            <p>Enter your farm's soil nutrient analysis and localized meteorological conditions below.</p>
+          </div>
+          <div>
+            <span class="result-badge" id="activeModelBadge">Random Forest (99.2%)</span>
+          </div>
+        </div>
+
+        <!-- Quick Preset Climate Buttons for Instant Demo -->
+        <div class="preset-bar">
+          <span class="preset-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Quick Scenarios:
+          </span>
+          <button type="button" class="preset-chip" onclick="loadScenario('rice')">🌾 Rice (Monsoon Wet)</button>
+          <button type="button" class="preset-chip" onclick="loadScenario('cotton')">🌿 Cotton (Warm/High N)</button>
+          <button type="button" class="preset-chip" onclick="loadScenario('coffee')">☕ Coffee (Highland Humid)</button>
+          <button type="button" class="preset-chip" onclick="loadScenario('chickpea')">🌱 Chickpea (Cool/Dry)</button>
+          <button type="button" class="preset-chip" onclick="loadScenario('maize')">🌽 Maize (Balanced)</button>
+          <button type="button" class="preset-chip" onclick="loadScenario('grapes')">🍇 Grapes (High Potash)</button>
+        </div>
+
+        <div class="form-body">
+          <div class="form-grid">
+
+            <!-- Category 1: Soil Macronutrients (N-P-K) -->
+            <div class="input-category-card">
+              <div class="input-category-title">
+                <span>🌱</span> Soil Macronutrients (N-P-K)
+              </div>
+
+              <!-- Nitrogen (N) -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="slider-N" class="field-label">Nitrogen (N)</label>
+                  <span class="field-unit-badge">kg/ha</span>
+                </div>
+                <div class="dual-input-wrapper">
+                  <input type="range" id="slider-N" class="slider-input" min="0" max="140" value="80" step="1">
+                  <input type="number" id="num-N" class="number-input-box" min="0" max="140" value="80">
+                </div>
+                <div class="field-range-hint">
+                  <span>0 (Depleted)</span>
+                  <span>70 (Balanced)</span>
+                  <span>140 (Rich)</span>
+                </div>
+              </div>
+
+              <!-- Phosphorus (P) -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="slider-P" class="field-label">Phosphorus (P)</label>
+                  <span class="field-unit-badge">kg/ha</span>
+                </div>
+                <div class="dual-input-wrapper">
+                  <input type="range" id="slider-P" class="slider-input" min="5" max="145" value="48" step="1">
+                  <input type="number" id="num-P" class="number-input-box" min="5" max="145" value="48">
+                </div>
+                <div class="field-range-hint">
+                  <span>5 kg/ha</span>
+                  <span>50 kg/ha</span>
+                  <span>145 kg/ha</span>
+                </div>
+              </div>
+
+              <!-- Potassium (K) -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="slider-K" class="field-label">Potassium (K)</label>
+                  <span class="field-unit-badge">kg/ha</span>
+                </div>
+                <div class="dual-input-wrapper">
+                  <input type="range" id="slider-K" class="slider-input" min="5" max="205" value="40" step="1">
+                  <input type="number" id="num-K" class="number-input-box" min="5" max="205" value="40">
+                </div>
+                <div class="field-range-hint">
+                  <span>5 kg/ha</span>
+                  <span>50 kg/ha</span>
+                  <span>205 kg/ha</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 2: Climate & Weather Parameters -->
+            <div class="input-category-card">
+              <div class="input-category-title">
+                <span>🌦️</span> Meteorological & Climate Factors
+              </div>
+
+              <!-- Temperature (°C) -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="slider-temp" class="field-label">Temperature (°C)</label>
+                  <span class="field-unit-badge">°C</span>
+                </div>
+                <div class="dual-input-wrapper">
+                  <input type="range" id="slider-temp" class="slider-input" min="8" max="45" value="24" step="0.5">
+                  <input type="number" id="num-temp" class="number-input-box" min="8" max="45" value="24" step="0.5">
+                </div>
+                <div class="field-range-hint">
+                  <span>8°C (Cool)</span>
+                  <span>25°C (Temperate)</span>
+                  <span>45°C (Tropical)</span>
+                </div>
+              </div>
+
+              <!-- Humidity (%) -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="slider-humidity" class="field-label">Relative Humidity (%)</label>
+                  <span class="field-unit-badge">%</span>
+                </div>
+                <div class="dual-input-wrapper">
+                  <input type="range" id="slider-humidity" class="slider-input" min="10" max="100" value="82" step="1">
+                  <input type="number" id="num-humidity" class="number-input-box" min="10" max="100" value="82">
+                </div>
+                <div class="field-range-hint">
+                  <span>10% (Arid)</span>
+                  <span>55% (Moderate)</span>
+                  <span>100% (Saturated)</span>
+                </div>
+              </div>
+
+              <!-- Rainfall (mm) -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="slider-rainfall" class="field-label">Annual Rainfall (mm)</label>
+                  <span class="field-unit-badge" id="badge-rain-status">Heavy Rain</span>
+                </div>
+                <div class="dual-input-wrapper">
+                  <input type="range" id="slider-rainfall" class="slider-input" min="20" max="300" value="220" step="2">
+                  <input type="number" id="num-rainfall" class="number-input-box" min="20" max="300" value="220">
+                </div>
+                <div class="field-range-hint">
+                  <span>20 mm (Drought)</span>
+                  <span>120 mm</span>
+                  <span>300 mm (Monsoon)</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Category 3: Soil Chemistry & Geographic Region -->
+            <div class="input-category-card">
+              <div class="input-category-title">
+                <span>📍</span> Soil Reaction & Regional Preset
+              </div>
+
+              <!-- Soil pH -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="slider-ph" class="field-label">Soil pH Scale</label>
+                  <span class="field-unit-badge" id="badge-ph-status">Optimal Neutral</span>
+                </div>
+                <div class="dual-input-wrapper">
+                  <input type="range" id="slider-ph" class="slider-input" min="3.5" max="9.5" value="6.5" step="0.1">
+                  <input type="number" id="num-ph" class="number-input-box" min="3.5" max="9.5" value="6.5" step="0.1">
+                </div>
+                <div class="field-range-hint">
+                  <span>3.5 (Strongly Acidic)</span>
+                  <span>7.0 (Neutral)</span>
+                  <span>9.5 (Alkaline)</span>
+                </div>
+              </div>
+
+              <!-- Location / Region Selector (Optional) -->
+              <div class="form-field">
+                <div class="field-label-row">
+                  <label for="regionSelect" class="field-label">Location / Agro-Climatic Zone (Optional)</label>
+                  <span class="field-unit-badge">Regional Soil</span>
+                </div>
+                <select id="regionSelect" class="select-input-box">
+                  <option value="bengal_delta" selected>Eastern Wetlands / Bengal Delta (Alluvial/High Rain)</option>
+                  <option value="punjab_alluvial">Indo-Gangetic Plain (Punjab / Haryana Alluvial)</option>
+                  <option value="maharashtra_cotton">Deccan Black Cotton Soil (Maharashtra / Vidarbha)</option>
+                  <option value="kerala_coastal">Western Ghats Coastal Humid (Kerala / Konkan)</option>
+                  <option value="karnataka_highlands">Southern Highlands (Coorg / Chikmagalur)</option>
+                  <option value="rajasthan_semiarid">Western Semi-Arid Sandy Loam (Rajasthan / Gujarat)</option>
+                </select>
+                <div class="field-range-hint" style="margin-top:0.5rem;">
+                  <span>Selecting a region auto-calibrates baseline parameters.</span>
+                </div>
+              </div>
+
+              <div style="background: var(--bg-main); padding: 1rem; border-radius: var(--radius-sm); border: 1px solid var(--border-subtle); margin-top: 1.25rem;">
+                <div style="font-size: 0.82rem; font-weight: 700; color: var(--primary-900); margin-bottom: 0.25rem;">
+                  💡 Agronomist Guidance
+                </div>
+                <p style="font-size: 0.78rem; color: var(--text-muted); line-height: 1.5;">
+                  Nitrogen drives green leafy vegetative vigor; Phosphorus builds deep root systems; Potassium activates enzymes and disease resistance.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Form Action Buttons -->
+          <div class="form-actions-bar">
+            <div class="form-action-left">
+              <button type="button" class="btn-reset" id="resetBtn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                  <path d="M3 3v5h5"></path>
+                </svg>
+                <span>Reset Parameters</span>
+              </button>
+            </div>
+
+            <div>
+              <button type="button" class="btn-predict" id="predictBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 2v20"></path>
+                  <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                </svg>
+                <span>Predict Crop</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           SIMULATED MACHINE LEARNING PROGRESS LOADER
+           ===================================================================== -->
+      <div class="prediction-loader-overlay" id="predictionLoader">
+        <div class="loader-spinner"></div>
+        <h3 class="loader-title">Running Machine Learning Ensemble</h3>
+        <p style="color:var(--text-muted); font-size:0.95rem;">Evaluating multi-variate probability distributions across 22 crop classes...</p>
+
+        <div class="loader-steps">
+          <div class="loader-step-item active" id="step-1">
+            <div class="step-icon-indicator">1</div>
+            <span>Normalizing soil N-P-K & meteorological vector</span>
+          </div>
+          <div class="loader-step-item" id="step-2">
+            <div class="step-icon-indicator">2</div>
+            <span>Computing Random Forest ensemble tree classifications</span>
+          </div>
+          <div class="loader-step-item" id="step-3">
+            <div class="step-icon-indicator">3</div>
+            <span>Calculating class confidence probabilities & agronomic rationale</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- =====================================================================
+           4. PREDICTION RESULTS VIEW (SECTION 3)
+           ===================================================================== -->
+      <div class="results-container" id="results">
+        <div class="result-main-card">
+          <div class="result-hero-banner">
+            <div class="result-hero-left">
+              <div class="result-crop-avatar" id="resCropEmoji">🌾</div>
+              <div class="result-crop-meta">
+                <h3>Recommended Primary Crop</h3>
+                <div class="result-crop-name" id="resCropName">Rice</div>
+                <div class="result-crop-tags">
+                  <span class="result-badge" id="resScientificName">Oryza sativa</span>
+                  <span class="result-badge" id="resCropCategory">Cereal</span>
+                  <span class="result-badge" style="background:#10b981; color:white;">Top Recommendation</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-confidence-box">
+              <div class="confidence-number" id="resConfidenceNum">94.2%</div>
+              <div class="confidence-label">Prediction Confidence</div>
+            </div>
+          </div>
+
+          <div class="result-content-grid">
+            <div>
+              <!-- Agronomic Explanation -->
+              <div class="result-explanation-box">
+                <h4>
+                  <span>💡</span> Why This Crop Was Recommended
+                </h4>
+                <p id="resExplanation">
+                  High ambient humidity (82%) paired with heavy rainfall (220 mm) and neutral pH (6.5) creates optimal conditions for Rice vegetative growth. Nitrogen levels match peak vegetative tillering requirements.
+                </p>
+              </div>
+
+              <!-- Environmental Compatibility Row -->
+              <h4 style="font-size:1rem; color:var(--text-main); margin-bottom:0.75rem;">Agronomic Parameter Compatibility</h4>
+              <div class="match-metrics-row">
+                <div class="match-metric-card">
+                  <div class="match-metric-val" id="metricSoilMatch">96%</div>
+                  <div class="match-metric-lbl">Soil NPK Match</div>
+                </div>
+                <div class="match-metric-card">
+                  <div class="match-metric-val" id="metricClimateMatch">94%</div>
+                  <div class="match-metric-lbl">Climate Suitability</div>
+                </div>
+                <div class="match-metric-card">
+                  <div class="match-metric-val" id="metricWaterMatch">92%</div>
+                  <div class="match-metric-lbl">Rainfall Envelope</div>
+                </div>
+              </div>
+
+              <button type="button" class="btn-view-details" onclick="openCropModal()">
+                <span>📖 View Full Cultivation Guide</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M5 12h14"></path>
+                  <path d="m12 5 7 7-7 7"></path>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Alternative Suitable Crops -->
+            <div>
+              <div class="alternatives-card">
+                <h4>
+                  <span>Alternative Suitable Crops</span>
+                  <span style="font-size:0.8rem; color:var(--text-muted); font-weight:500;">Ranked Alternatives</span>
+                </h4>
+                <div class="alternatives-list" id="alternativesList">
+                  <!-- Injected via JavaScript -->
+                </div>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:1.25rem;">
+                  * Click any alternative crop to view its complete agronomic specifications and pest management tips.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       5. FARMER DASHBOARD (SECTION 5)
+       ========================================================================= -->
+  <section class="dashboard-section" id="dashboard">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Telemetry & Analytics</span>
+        <h2 class="section-title">Farmer Analytical Dashboard</h2>
+        <p class="section-desc">Real-time visualization of soil nutrient balance, micro-climatic environmental telemetry, and historical recommendation records.</p>
+      </div>
+
+      <!-- KPI Summary Cards -->
+      <div class="dashboard-summary-grid">
+        <div class="kpi-metric-card">
+          <div class="kpi-icon-pill green">🌾</div>
+          <div>
+            <div class="kpi-info-val" id="kpiRecommendedCrop">🌾 Rice</div>
+            <div class="kpi-info-lbl">Active Recommended Crop</div>
+          </div>
+        </div>
+
+        <div class="kpi-metric-card">
+          <div class="kpi-icon-pill amber">🌱</div>
+          <div>
+            <div class="kpi-info-val" id="kpiSoilN">80 kg/ha</div>
+            <div class="kpi-info-lbl">Soil Nitrogen (N) Reading</div>
+          </div>
+        </div>
+
+        <div class="kpi-metric-card">
+          <div class="kpi-icon-pill blue">💧</div>
+          <div>
+            <div class="kpi-info-val" id="kpiRainfall">220 mm</div>
+            <div class="kpi-info-lbl">Precipitation Level</div>
+          </div>
+        </div>
+
+        <div class="kpi-metric-card">
+          <div class="kpi-icon-pill purple">🌡️</div>
+          <div>
+            <div class="kpi-info-val" id="kpiTemp">24°C</div>
+            <div class="kpi-info-lbl">Ambient Temperature</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="dashboard-charts-grid">
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Soil Nutrient Balance (N-P-K Radar)</h3>
+            <span class="field-unit-badge">Measured vs Ideal</span>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="nutrientRadarChart"></canvas>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <h3>Environmental Telemetry Conditions</h3>
+            <span class="field-unit-badge">Field Gauges</span>
+          </div>
+          <div class="chart-canvas-wrapper">
+            <canvas id="envGaugeChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prediction History Table -->
+      <div class="history-card">
+        <div class="history-card-header">
+          <div>
+            <h3>Crop Prediction & Soil Test History</h3>
+            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.2rem;">Persistent records preserved in your local farm session</p>
+          </div>
+          <div class="history-actions">
+            <button type="button" class="btn-table-action" onclick="exportHistoryCSV()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+              </svg>
+              <span>Export CSV</span>
+            </button>
+            <button type="button" class="btn-table-action" onclick="clearHistory()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              </svg>
+              <span>Clear History</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Region / Field</th>
+                <th>Recommended Crop</th>
+                <th>Confidence</th>
+                <th>Telemetry Parameters</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- Injected via app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       6. CROP LIBRARY & DIRECTORY (SECTION 4 DEEP-DIVE)
+       ========================================================================= -->
+  <section class="crop-directory-section" id="directory">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Agronomy Knowledge Base</span>
+        <h2 class="section-title">Explore Supported Crops</h2>
+        <p class="section-desc">Browse our comprehensive directory of 22 supported crops with scientific data, required nutrients, irrigation, and harvest durations.</p>
+      </div>
+
+      <div class="directory-filter-bar">
+        <div class="directory-search-box">
+          <span class="search-icon-pos">🔍</span>
+          <input type="text" id="directorySearchInput" placeholder="Search crops by name (e.g. Cotton, Rice, Maize)...">
+        </div>
+
+        <div class="crop-filter-tags">
+          <button type="button" class="filter-btn active" data-cat="all">All Crops (22)</button>
+          <button type="button" class="filter-btn" data-cat="Cereal">Cereals</button>
+          <button type="button" class="filter-btn" data-cat="Pulse">Pulses</button>
+          <button type="button" class="filter-btn" data-cat="Fruit">Fruits</button>
+          <button type="button" class="filter-btn" data-cat="Commercial">Commercial / Fiber</button>
+          <button type="button" class="filter-btn" data-cat="Plantation">Plantation</button>
+        </div>
+      </div>
+
+      <div class="crop-directory-grid" id="cropDirectoryGrid">
+        <!-- Rendered via app.js -->
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       7. ML MODEL SECTION ("HOW IT WORKS") (SECTION 6)
+       ========================================================================= -->
+  <section class="ml-section" id="how-it-works">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Machine Learning Architecture</span>
+        <h2 class="section-title">How the ML Model Works</h2>
+        <p class="section-desc">From in-situ soil testing to high-confidence agricultural recommendations, here is the end-to-end data science workflow.</p>
+      </div>
+
+      <!-- 5-Step ML Workflow Flowchart -->
+      <div class="ml-pipeline-flow">
+        <div class="ml-flow-step">
+          <div class="flow-step-num">1</div>
+          <div class="flow-step-icon">👨‍🌾</div>
+          <h4>Farmer Input</h4>
+          <p>Farmer inputs N-P-K nutrients, soil pH, and weather telemetry.</p>
+        </div>
+
+        <div class="ml-flow-step">
+          <div class="flow-step-num">2</div>
+          <div class="flow-step-icon">⚙️</div>
+          <h4>Data Preprocessing</h4>
+          <p>StandardScaler normalizes z-scores and handles feature outliers.</p>
+        </div>
+
+        <div class="ml-flow-step">
+          <div class="flow-step-num">3</div>
+          <div class="flow-step-icon">🧠</div>
+          <h4>Machine Learning Model</h4>
+          <p>Ensemble classifier processes non-linear multidimensional decision bounds.</p>
+        </div>
+
+        <div class="ml-flow-step">
+          <div class="flow-step-num">4</div>
+          <div class="flow-step-icon">📊</div>
+          <h4>Crop Prediction</h4>
+          <p>Softmax probability computes confidence scores for all 22 crops.</p>
+        </div>
+
+        <div class="ml-flow-step">
+          <div class="flow-step-num">5</div>
+          <div class="flow-step-icon">🌾</div>
+          <h4>Recommendation</h4>
+          <p>Generates agronomy guide, water requirements, and planting tips.</p>
+        </div>
+      </div>
+
+      <!-- Algorithm Comparison Grid -->
+      <h3 style="font-size:1.4rem; color:var(--primary-950); margin-bottom:1rem; text-align:center;">
+        Classification Algorithms Benchmarked
+      </h3>
+      <p style="text-align:center; color:var(--text-muted); font-size:0.95rem; max-width:600px; margin:0 auto 2rem auto;">
+        Click any model below to inspect its architecture or use it as the active inference engine.
+      </p>
+
+      <div class="algorithms-comparison-grid">
+        <div class="algo-card active-algo" id="algo-rf" onclick="setActiveAlgorithm('rf')">
+          <div class="algo-header">
+            <span class="algo-name">Random Forest Classifier</span>
+            <span class="algo-score-badge">99.2% Accuracy</span>
+          </div>
+          <p>Ensemble of 100 decision trees utilizing bootstrap aggregation and random feature sub-selection. Highly resilient to noisy soil measurements and non-linear climate thresholds.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">Active Model</span>
+            <span class="algo-tag">100 Estimators</span>
+            <span class="algo-tag">Gini Impurity</span>
+            <span class="algo-tag">Low Overfitting</span>
+          </div>
+        </div>
+
+        <div class="algo-card" id="algo-dt" onclick="setActiveAlgorithm('dt')">
+          <div class="algo-header">
+            <span class="algo-name">Decision Tree</span>
+            <span class="algo-score-badge">92.4% Accuracy</span>
+          </div>
+          <p>Constructs a hierarchical binary decision tree splitting on optimal Gini gain. Offers full interpretability and fast inference, but can be sensitive to marginal variance.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">Single Tree</span>
+            <span class="algo-tag">High Interpretability</span>
+            <span class="algo-tag">Max Depth: 12</span>
+          </div>
+        </div>
+
+        <div class="algo-card" id="algo-svm" onclick="setActiveAlgorithm('svm')">
+          <div class="algo-header">
+            <span class="algo-name">Support Vector Machine (SVM)</span>
+            <span class="algo-score-badge">96.5% Accuracy</span>
+          </div>
+          <p>Projects 7-dimensional agronomic vectors into higher-dimensional space using a Radial Basis Function (RBF) kernel to construct maximum-margin hyperplanes.</p>
+          <div class="algo-tags">
+            <span class="algo-tag">RBF Kernel</span>
+            <span class="algo-tag">C = 1.0</span>
+            <span class="algo-tag">Gamma = Scale</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================================
+       8. TECHNOLOGY ARCHITECTURE & FOOTER (SECTION 9)
+       ========================================================================= -->
+  <footer class="tech-stack-section" id="tech-stack">
+    <div class="container">
+      <div class="section-header" style="color:white;">
+        <span class="section-tag" style="background:rgba(255,255,255,0.1); color:#34d399;">System Engineering</span>
+        <h2 class="section-title" style="color:white;">Technology Stack & Architecture</h2>
+        <p class="section-desc" style="color:#94a3b8;">Full-stack architectural blueprint of the Smart Crop Recommendation prototype for enterprise and academic deployment.</p>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-card">
+          <div class="tech-card-icon">💻</div>
+          <div class="tech-card-role">Client Layer</div>
+          <h4>Frontend</h4>
+          <p>HTML5, Modern CSS3 (Variables, Glassmorphism, Flexbox/Grid), ES6+ JavaScript, Chart.js for data visualization.</p>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-card-icon">⚡</div>
+          <div class="tech-card-role">API Layer</div>
+          <h4>Backend</h4>
+          <p>Python 3.10+ with Flask REST API microservices, handling JSON serialization and model pipeline orchestration.</p>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-card-icon">🧠</div>
+          <div class="tech-card-role">Intelligence Layer</div>
+          <h4>Machine Learning</h4>
+          <p>Scikit-Learn Random Forest Classifier trained on 2,200 Kaggle crop samples with 10-fold cross-validation.</p>
+        </div>
+
+        <div class="tech-card">
+          <div class="tech-card-icon">🗄️</div>
+          <div class="tech-card-role">Storage Layer</div>
+          <h4>Database</h4>
+          <p>MySQL relational schema for farmer accounts and field logs; MongoDB for unstructured IoT soil telemetry streams.</p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>
+          <strong>Smart Crop Recommendations Using Machine Learning</strong> &bull; Production Prototype v2.4
+        </div>
+        <div>
+          Designed with 💚 for Sustainable Global Agriculture
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- =========================================================================
+       9. CROP DETAILS MODAL (SECTION 4)
+       ========================================================================= -->
+  <div class="modal-backdrop" id="cropDetailModal">
+    <div class="crop-detail-modal">
+      <button type="button" class="modal-close-btn" onclick="closeCropModal()" aria-label="Close modal">✕</button>
+      
+      <div class="modal-header-banner">
+        <div class="modal-crop-icon" id="modalCropEmoji">🌾</div>
+        <div class="modal-title-box">
+          <h2 id="modalCropName">Rice</h2>
+          <p id="modalScientificName">Oryza sativa</p>
+          <span class="result-badge" id="modalCategoryBadge" style="margin-top:0.5rem; display:inline-block;">Cereal Crop</span>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <h3 style="font-size:1.15rem; color:var(--primary-900); margin-bottom:1rem;">Ideal Growing Conditions & Specification</h3>
+
+        <div class="crop-specs-grid">
+          <div class="spec-tile">
+            <div class="spec-title">Growing Season</div>
+            <div class="spec-value" id="specSeason">Kharif (Monsoon)</div>
+          </div>
+
+          <div class="spec-tile">
+            <div class="spec-title">Crop Duration</div>
+            <div class="spec-value" id="specDuration">110 – 140 Days</div>
+          </div>
+
+          <div class="spec-tile">
+            <div class="spec-title">Ideal Temperature</div>
+            <div class="spec-value" id="specTemp">20°C – 32°C</div>
+          </div>
+
+          <div class="spec-tile">
+            <div class="spec-title">Ideal Rainfall</div>
+            <div class="spec-value" id="specRainfall">180mm – 300mm</div>
+          </div>
+
+          <div class="spec-tile">
+            <div class="spec-title">Ideal Soil pH</div>
+            <div class="spec-value" id="specPh">5.5 – 7.2</div>
+          </div>
+
+          <div class="spec-tile">
+            <div class="spec-title">Nutrient Needs</div>
+            <div class="spec-value" id="specNutrients">High N, Mod P & K</div>
+          </div>
+        </div>
+
+        <!-- Agronomic Cultivation Guide -->
+        <div class="agronomy-tips-card">
+          <h4>
+            <span>🚜</span> Basic Farming Recommendations & Best Practices
+          </h4>
+          <ul class="tips-list">
+            <li><strong>Sowing & Land Prep:</strong> <span id="tipSowing">Level puddled clayey loam soil thoroughly. Transplant 20-25 day old seedlings.</span></li>
+            <li><strong>Irrigation Management:</strong> <span id="tipIrrigation">Maintain shallow standing water (2-5 cm) during vegetative stage.</span></li>
+            <li><strong>Fertilizer Schedule:</strong> <span id="tipFertilizer">Apply Nitrogen in three split doses (basal, tillering, panicle initiation).</span></li>
+            <li><strong>Pest & Disease Control:</strong> <span id="tipPests">Monitor for stem borer and bacterial blight; use bio-pesticides.</span></li>
+          </ul>
+        </div>
+
+        <div style="text-align:right;">
+          <button type="button" class="btn-primary" onclick="closeCropModal()">Got It, Close Guide</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
